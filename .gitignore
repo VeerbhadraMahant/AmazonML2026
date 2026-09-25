@@ -1,0 +1,36 @@
+claude.md
+
+# --- Provided data & macOS zip cruft (large, host-provided, not ours to version) ---
+AmazonML/student_resource/dataset/
+AmazonML/__MACOSX/
+
+# --- Pipeline working cache (embeddings, parquet, model checkpoints) ---
+work/
+*.parquet
+*.pt
+*.pth
+*.safetensors
+*.bin
+*.ckpt
+
+# --- Generated outputs (regenerate via run_pipeline.py; keep submissions/log.md only) ---
+output/
+submissions/*.tsv
+!submissions/log.md
+
+# --- Python ---
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

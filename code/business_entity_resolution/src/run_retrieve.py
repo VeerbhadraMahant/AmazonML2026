@@ -48,9 +48,14 @@ def main():
     print(f"[{args.split}] embedded ({round(time.time()-t1,1)}s)")
 
     t2 = time.time()
-    parts_dir = config.WORK_DIR / f"candidate_parts_{prefix}"
-    candidates = retrieve.build_candidates(s1, s1e, [(s2, s2e), (s3, s3e)], parts_dir, k=args.k)
-    candidates.write_parquet(config.WORK_DIR / f"candidates_{prefix}.parquet")
+    candidates_path = config.WORK_DIR / f"candidates_{prefix}.parquet"
+    if candidates_path.exists():
+        candidates = pl.read_parquet(candidates_path)
+        print(f"[{args.split}] candidates: loaded cached {candidates.height} pairs")
+    else:
+        parts_dir = config.WORK_DIR / f"candidate_parts_{prefix}"
+        candidates = retrieve.build_candidates(s1, s1e, [(s2, s2e), (s3, s3e)], parts_dir, k=args.k)
+        candidates.write_parquet(candidates_path)
     print(f"[{args.split}] candidates: {candidates.height} pairs "
           f"({round(time.time()-t2,1)}s)")
 

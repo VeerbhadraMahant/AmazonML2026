@@ -66,11 +66,13 @@ def split_and_sample(features_path, s1_path, train_out, val_out,
 
 
 if __name__ == "__main__":
+    import sys
+    suffix = "_" + sys.argv[1] if len(sys.argv) > 1 else ""
     n_train, n_val, n_train_ids, n_val_ids = split_and_sample(
-        config.WORK_DIR / "pairs_features_train.parquet",
+        config.WORK_DIR / f"pairs_features_train{suffix}.parquet",
         config.WORK_DIR / "norm_train_s1.parquet",
-        config.WORK_DIR / "train_sample.parquet",
-        config.WORK_DIR / "val_full.parquet",
+        config.WORK_DIR / f"train_sample{suffix}.parquet",
+        config.WORK_DIR / f"val_full{suffix}.parquet",
     )
-    print(f"train_sample: {n_train} rows from {n_train_ids} S1 ids")
-    print(f"val_full: {n_val} rows from {n_val_ids} S1 ids")
+    print(f"train_sample{suffix}: {n_train} rows from {n_train_ids} S1 ids")
+    print(f"val_full{suffix}: {n_val} rows from {n_val_ids} S1 ids")

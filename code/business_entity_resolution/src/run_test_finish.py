@@ -19,17 +19,20 @@ import decode
 import io_utils
 import score_matcher
 
-TAU = 0.91  # picked from the flat peak (0.90-0.92) of the validation F0.5 sweep
+import sys
+
+TAU = float(sys.argv[2]) if len(sys.argv) > 2 else 0.91  # from the validation F0.5 sweep
 
 
 def main():
     t0 = time.time()
     s1 = pl.read_parquet(config.WORK_DIR / "norm_test_s1.parquet")
 
-    scored_path = config.WORK_DIR / "test_scored.parquet"
+    suffix = "_" + sys.argv[1] if len(sys.argv) > 1 else ""
+    scored_path = config.WORK_DIR / f"test_scored{suffix}.parquet"
     scored = score_matcher.score(
-        config.WORK_DIR / "pairs_features_test.parquet",
-        config.WORK_DIR / "lgbm_matcher.txt",
+        config.WORK_DIR / f"pairs_features_test{suffix}.parquet",
+        config.WORK_DIR / f"lgbm_matcher{suffix}.txt",
         scored_path,
     )
     print(f"[test] scored {scored.height} pairs ({round(time.time()-t0,1)}s)")

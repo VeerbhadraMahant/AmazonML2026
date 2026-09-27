@@ -24,23 +24,38 @@ FEATURE_COLS = [
     "name_len_diff", "addr_len_diff", "either_non_ascii",
 ]
 
+# Context/competition features added by add_context_features.py -- signal for
+# "does this S2/S3 record also look like a good match for other S1s" and
+# "how much better is this S1's best candidate than its runner-up", missing
+# from the base FEATURE_COLS above (cand_rank/cand_margin there are computed
+# only within each S1's own candidate list).
+CONTEXT_FEATURE_COLS = [
+    "ent_n_cands", "ent_sim_rank", "ent_sim_margin", "ent_sim_gap2",
+    "ent_lex_rank", "ent_lex_margin",
+    "s1_n_cands", "s1_lex_rank", "s1_lex_margin",
+]
 
-def load_xy(path):
+
+def load_xy(path, feature_cols):
     df = pl.read_parquet(path)
-    X = df.select(FEATURE_COLS).to_numpy()
+    X = df.select(feature_cols).to_numpy()
     y = df["label"].to_numpy()
     return df, X, y
 
 
-def train(train_path, val_path, model_out):
+def train(train_path, val_path, model_out, val_scored_out=None):
     t0 = time.time()
-    train_df, X_train, y_train = load_xy(train_path)
-    val_df, X_val, y_val = load_xy(val_path)
+    cols_present = pl.read_parquet(train_path, n_rows=1).columns
+    feature_cols = FEATURE_COLS + [c for c in CONTEXT_FEATURE_COLS if c in cols_present]
+    print(f"using {len(feature_cols)} features: {feature_cols}")
+
+    train_df, X_train, y_train = load_xy(train_path, feature_cols)
+    val_df, X_val, y_val = load_xy(val_path, feature_cols)
     print(f"train: {X_train.shape}, positives={y_train.sum()} ({y_train.mean():.4f}); "
           f"val: {X_val.shape}, positives={y_val.sum()} ({y_val.mean():.4f})")
 
-    train_set = lgb.Dataset(X_train, label=y_train, feature_name=FEATURE_COLS)
-    val_set = lgb.Dataset(X_val, label=y_val, feature_name=FEATURE_COLS, reference=train_set)
+    train_set = lgb.Dataset(X_train, label=y_train, feature_name=feature_cols)
+    val_set = lgb.Dataset(X_val, label=y_val, feature_name=feature_cols, reference=train_set)
 
     params = dict(
         objective="binary",
@@ -66,22 +81,24 @@ def train(train_path, val_path, model_out):
     ap = average_precision_score(y_val, val_pred)
     print(f"val AUC={auc:.4f} AP={ap:.4f}")
 
-    importance = dict(zip(FEATURE_COLS, model.feature_importance(importance_type="gain").tolist()))
+    importance = dict(zip(feature_cols, model.feature_importance(importance_type="gain").tolist()))
     print("feature importance (gain):", json.dumps(
         dict(sorted(importance.items(), key=lambda kv: -kv[1])), indent=2))
 
     model.save_model(str(model_out))
 
     val_df = val_df.with_columns(pl.Series("pred", val_pred.astype(np.float32)))
-    val_scored_path = config.WORK_DIR / "val_scored.parquet"
+    val_scored_path = val_scored_out or (config.WORK_DIR / "val_scored.parquet")
     val_df.write_parquet(val_scored_path)
     print(f"wrote {model_out} and {val_scored_path}")
     return model
 
 
 if __name__ == "__main__":
-    train(
-        config.WORK_DIR / "train_sample.parquet",
-        config.WORK_DIR / "val_full.parquet",
-        config.WORK_DIR / "lgbm_matcher.txt",
-    )
+    import sys
+    suffix = "_" + sys.argv[1] if len(sys.argv) > 1 else ""
+    train_path = config.WORK_DIR / f"train_sample{suffix}.parquet"
+    val_path = config.WORK_DIR / f"val_full{suffix}.parquet"
+    model_out = config.WORK_DIR / f"lgbm_matcher{suffix}.txt"
+    val_scored_out = config.WORK_DIR / f"val_scored{suffix}.parquet"
+    train(train_path, val_path, model_out, val_scored_out)

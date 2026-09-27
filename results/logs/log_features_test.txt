@@ -1,0 +1,2 @@
+[test] augment_candidates done (28.8s)
+[test] compute_features_streaming: 120781918 rows (719.7s), wrote D:\Work\Hackathons\Amazon-ML\AmazonML2026\work\pairs_features_test.parquet, total 748.5s

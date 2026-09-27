@@ -1,0 +1,42 @@
+D:\Work\Hackathons\Amazon-ML\AmazonML2026\code\business_entity_resolution\src\stack_stage2.py:170: DeprecationWarning: In Polars 2.0, the default behavior for `empty_as_null` will change to `False`. To keep the current behavior, explicitly set `empty_as_null=True`.
+  .explode("entity_id").filter(pl.col("entity_id").is_not_null() & (pl.col("entity_id") != ""))
+D:\Work\Hackathons\Amazon-ML\AmazonML2026\code\business_entity_resolution\src\stack_stage2.py:433: DeprecationWarning: `is_in` with a collection of the same datatype is ambiguous and deprecated.
+Please use `implode` to return to previous behavior.
+
+See https://github.com/pola-rs/polars/issues/22149 for more information.
+  narrow = lf.select("hs", "he", "is_s3", "pred", "label").collect()
+narrow rows 97042537 (drop_frac=0.21)
+selected rows 50279866 train S1 706347 (25s)
+train (36390783, 48) holdout (1943103, 48) eval 11945980 (79s)
+[0]	ho-logloss:0.18671
+[100]	ho-logloss:0.01107
+[200]	ho-logloss:0.00998
+[300]	ho-logloss:0.00958
+[400]	ho-logloss:0.00935
+[500]	ho-logloss:0.00918
+[600]	ho-logloss:0.00902
+[700]	ho-logloss:0.00894
+[800]	ho-logloss:0.00884
+[900]	ho-logloss:0.00878
+[1000]	ho-logloss:0.00875
+[1100]	ho-logloss:0.00870
+[1200]	ho-logloss:0.00867
+[1300]	ho-logloss:0.00863
+[1400]	ho-logloss:0.00860
+[1438]	ho-logloss:0.00859
+xgb best_iter=1438 (626s)
+C:\Users\Veerbhadra\AppData\Local\Programs\Python\Python313\Lib\site-packages\xgboost\core.py:569: UserWarning: [23:10:01] WARNING: C:\actions-runner\_work\xgboost\xgboost\src\common\error_msg.cc:62: Falling back to prediction using DMatrix due to mismatched devices. This might lead to higher memory usage and slower performance. XGBoost is running on: cuda:0, while the input data is on: cpu.
+Potential solutions:
+- Use a data structure that matches the device ordinal in the booster.
+- Set the device for booster before call to inplace_predict.
+
+This warning will only be shown once.
+
+  return func(**kwargs)
+eval preds done (678s)
+  [xgb3] best {'all': 0.96251, 'India': 0.95156, 'US': 0.96983} cfg={'decoder': 'expf', 'floor': 0.2, 'gain': 0.8, 'etrue_scale': 1.0, 'prior_r': 1.0}
+  [xgb1+xgb2+xgb3] best {'all': 0.96298, 'India': 0.95231, 'US': 0.97012} cfg={'decoder': 'expf', 'floor': 0.2, 'gain': 0.7, 'etrue_scale': 1.0, 'prior_r': 1.0}
+  [xgb2+xgb3] best {'all': 0.96311, 'India': 0.95234, 'US': 0.97031} cfg={'decoder': 'expf', 'floor': 0.2, 'gain': 0.8, 'etrue_scale': 1.0, 'prior_r': 1.0}
+  [xgb1+xgb3] best {'all': 0.96267, 'India': 0.95199, 'US': 0.96981} cfg={'decoder': 'expf', 'floor': 0.2, 'gain': 0.7, 'etrue_scale': 1.0, 'prior_r': 1.0}
+  [xgb1+xgb2] best {'all': 0.96264, 'India': 0.95189, 'US': 0.96984} cfg={'decoder': 'expf', 'floor': 0.4, 'gain': 0.7, 'etrue_scale': 1.0, 'prior_r': 1.0}
+ENS best=xgb2+xgb3 {'all': 0.96311, 'India': 0.95234, 'US': 0.97031} dec={'decoder': 'expf', 'floor': 0.2, 'gain': 0.8, 'etrue_scale': 1.0, 'prior_r': 1.0} (695s)

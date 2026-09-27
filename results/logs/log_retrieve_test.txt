@@ -1,0 +1,5 @@
+[test] normalized: s1=1732544 s2=4887273 s3=5082316 (2.3s)
+[test] embedded (0.0s)
+[test] candidates: loaded cached 120781918 pairs
+[test] candidates: 120781918 pairs (1.0s)
+[test] wrote D:\Work\Hackathons\Amazon-ML\AmazonML2026\work\candidate_pairs_test.tsv (1732544 S1 rows), total wall time 18.4s

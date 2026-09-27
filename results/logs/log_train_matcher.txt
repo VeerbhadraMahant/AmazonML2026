@@ -1,0 +1,35 @@
+train: (21855788, 16), positives=6696649 (0.3064); val: (11945980, 16), positives=741780 (0.0621)
+Training until validation scores don't improve for 30 rounds
+[50]	val's auc: 0.997535	val's average_precision: 0.971817
+[100]	val's auc: 0.998176	val's average_precision: 0.979607
+[150]	val's auc: 0.998486	val's average_precision: 0.982721
+[200]	val's auc: 0.998642	val's average_precision: 0.984253
+[250]	val's auc: 0.998716	val's average_precision: 0.985023
+[300]	val's auc: 0.998773	val's average_precision: 0.985596
+[350]	val's auc: 0.99881	val's average_precision: 0.985978
+[400]	val's auc: 0.998845	val's average_precision: 0.98636
+[450]	val's auc: 0.998867	val's average_precision: 0.986606
+[500]	val's auc: 0.998885	val's average_precision: 0.986808
+Did not meet early stopping. Best iteration is:
+[500]	val's auc: 0.998885	val's average_precision: 0.986808
+trained in 876.2s, best_iteration=500
+val AUC=0.9989 AP=0.9868
+feature importance (gain): {
+  "cand_rank": 137995953.1512184,
+  "addr_token_set_ratio": 13600095.928813934,
+  "sim": 12525553.23371315,
+  "name_core_ratio": 12232460.637809753,
+  "number_jaccard": 9302475.205432892,
+  "name_token_set_ratio": 5092559.676945686,
+  "name_ratio": 4335850.628054619,
+  "addr_ratio": 3180207.2226400375,
+  "name_len_diff": 2330595.5640354156,
+  "s1_name_core_freq": 1870747.4680595398,
+  "name_first_token_eq": 1015001.983795166,
+  "number_prefix": 972896.2427835464,
+  "addr_len_diff": 932745.9085526466,
+  "cand_margin": 915215.8850779533,
+  "either_non_ascii": 552206.9174337387,
+  "number_exact": 303820.20781707764
+}
+wrote D:\Work\Hackathons\Amazon-ML\AmazonML2026\work\lgbm_matcher.txt and D:\Work\Hackathons\Amazon-ML\AmazonML2026\work\val_scored.parquet

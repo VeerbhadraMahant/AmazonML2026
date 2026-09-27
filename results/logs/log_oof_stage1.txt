@@ -1,0 +1,5 @@
+samples built: fold0=12135530 fold1=12142522 (57.7s)
+trained fold0 (274.7s)
+trained fold1 (358.6s)
+wrote oof_train_scored.parquet (720.3s)
+wrote test_scored_oof.parquet (1139.5s)

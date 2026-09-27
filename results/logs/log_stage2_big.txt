@@ -1,0 +1,16 @@
+D:\Work\Hackathons\Amazon-ML\AmazonML2026\code\business_entity_resolution\src\stack_stage2.py:164: DeprecationWarning: In Polars 2.0, the default behavior for `empty_as_null` will change to `False`. To keep the current behavior, explicitly set `empty_as_null=True`.
+  .explode("entity_id").filter(pl.col("entity_id").is_not_null() & (pl.col("entity_id") != ""))
+selected rows 44140027 train S1 594346 (25s)
+train (30596051, 48) holdout (1597996, 48) eval 11945980 (68s)
+Training until validation scores don't improve for 40 rounds
+[50]	valid_0's binary_logloss: 0.0201119
+[100]	valid_0's binary_logloss: 0.0118283
+[150]	valid_0's binary_logloss: 0.0108477
+[200]	valid_0's binary_logloss: 0.0105447
+Early stopping, best iteration is:
+[200]	valid_0's binary_logloss: 0.0105447
+best_iter=200 (251s)
+  [stage2-big] best tau: {'all': 0.95654, 'India': 0.94439, 'US': 0.96467}  cfg={'decoder': 'tau', 'tau': np.float64(0.64)}
+  [stage2-big] best tau_single: {'all': 0.95308, 'India': 0.94008, 'US': 0.96178}  cfg={'decoder': 'tau_single', 'tau': 0.7, 'tau_s': 0.85}
+  [stage2-big] best expf: {'all': 0.95739, 'India': 0.94585, 'US': 0.96512}  cfg={'decoder': 'expf', 'floor': 0.2, 'etrue_scale': 1.0, 'gain': 0.8}
+saved D:\Work\Hackathons\Amazon-ML\AmazonML2026\work\lgbm_stage2_big.txt, D:\Work\Hackathons\Amazon-ML\AmazonML2026\work\stage2_big_config.json: {'decoder': 'expf', 'floor': 0.2, 'etrue_scale': 1.0, 'gain': 0.8} {'all': 0.95739, 'India': 0.94585, 'US': 0.96512} (268s)

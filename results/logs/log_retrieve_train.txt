@@ -1,0 +1,4 @@
+[train] normalized: s1=2206821 s2=5034616 s3=5285603 (5.7s)
+[train] embedded (0.0s)
+[train] candidates: 119684711 pairs (1252.5s)
+[train] wrote D:\Work\Hackathons\Amazon-ML\AmazonML2026\work\candidate_pairs_train.tsv (2206821 S1 rows), total wall time 1294.1s

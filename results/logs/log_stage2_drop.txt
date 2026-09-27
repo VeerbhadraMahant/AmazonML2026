@@ -1,0 +1,46 @@
+D:\Work\Hackathons\Amazon-ML\AmazonML2026\code\business_entity_resolution\src\stack_stage2.py:164: DeprecationWarning: In Polars 2.0, the default behavior for `empty_as_null` will change to `False`. To keep the current behavior, explicitly set `empty_as_null=True`.
+  .explode("entity_id").filter(pl.col("entity_id").is_not_null() & (pl.col("entity_id") != ""))
+D:\Work\Hackathons\Amazon-ML\AmazonML2026\code\business_entity_resolution\src\stack_stage2.py:426: DeprecationWarning: `is_in` with a collection of the same datatype is ambiguous and deprecated.
+Please use `implode` to return to previous behavior.
+
+See https://github.com/pola-rs/polars/issues/22149 for more information.
+  narrow = lf.select("hs", "he", "is_s3", "pred", "label").collect()
+narrow rows 97042537 (drop_frac=0.21)
+selected rows 37378577 train S1 469773 (30s)
+train (24168143, 48) holdout (1264454, 48) eval 11945980 (110s)
+stage-1 pred on simulated eval:
+  [stage1] best tau: {'all': 0.9451, 'India': 0.9315, 'US': 0.95421} cfg={'decoder': 'tau', 'tau': 0.92}
+  [stage1] best expf_r1.0: {'all': 0.91756, 'India': 0.89942, 'US': 0.92971} cfg={'decoder': 'expf', 'floor': 0.4, 'gain': 0.7, 'etrue_scale': 1.0, 'prior_r': 1.0}
+  [stage1] best expf_r0.8: {'all': 0.92347, 'India': 0.90532, 'US': 0.93562} cfg={'decoder': 'expf', 'floor': 0.4, 'gain': 0.7, 'etrue_scale': 1.0, 'prior_r': 0.8}
+  [stage1] best expf_r0.6: {'all': 0.93287, 'India': 0.9156, 'US': 0.94443} cfg={'decoder': 'expf', 'floor': 0.4, 'gain': 0.7, 'etrue_scale': 1.0, 'prior_r': 0.6}
+  [stage1] best expf_r0.5: {'all': 0.93687, 'India': 0.92007, 'US': 0.94811} cfg={'decoder': 'expf', 'floor': 0.4, 'gain': 0.7, 'etrue_scale': 1.0, 'prior_r': 0.5}
+  [stage1] best expf_r0.4: {'all': 0.9399, 'India': 0.92352, 'US': 0.95086} cfg={'decoder': 'expf', 'floor': 0.4, 'gain': 0.7, 'etrue_scale': 1.0, 'prior_r': 0.4}
+  [stage1] best expf_r0.3: {'all': 0.94335, 'India': 0.92826, 'US': 0.95345} cfg={'decoder': 'expf', 'floor': 0.4, 'gain': 0.7, 'etrue_scale': 1.0, 'prior_r': 0.3}
+  [stage1] best expf_r0.2: {'all': 0.94592, 'India': 0.93261, 'US': 0.95483} cfg={'decoder': 'expf', 'floor': 0.2, 'gain': 0.7, 'etrue_scale': 1.0, 'prior_r': 0.2}
+existing model lgbm_stage2_big.txt on simulated eval:
+  [lgbm_stage2_big.txt] best tau: {'all': 0.95587, 'India': 0.94378, 'US': 0.96397} cfg={'decoder': 'tau', 'tau': 0.64}
+  [lgbm_stage2_big.txt] best expf_r1.0: {'all': 0.95689, 'India': 0.94536, 'US': 0.96461} cfg={'decoder': 'expf', 'floor': 0.4, 'gain': 0.8, 'etrue_scale': 1.0, 'prior_r': 1.0}
+  [lgbm_stage2_big.txt] best expf_r0.8: {'all': 0.95657, 'India': 0.94534, 'US': 0.96408} cfg={'decoder': 'expf', 'floor': 0.2, 'gain': 0.8, 'etrue_scale': 1.0, 'prior_r': 0.8}
+  [lgbm_stage2_big.txt] best expf_r0.6: {'all': 0.95565, 'India': 0.94455, 'US': 0.96309} cfg={'decoder': 'expf', 'floor': 0.2, 'gain': 1.0, 'etrue_scale': 1.0, 'prior_r': 0.6}
+  [lgbm_stage2_big.txt] best expf_r0.5: {'all': 0.95459, 'India': 0.94361, 'US': 0.96195} cfg={'decoder': 'expf', 'floor': 0.2, 'gain': 1.0, 'etrue_scale': 1.0, 'prior_r': 0.5}
+  [lgbm_stage2_big.txt] best expf_r0.4: {'all': 0.95286, 'India': 0.94175, 'US': 0.96029} cfg={'decoder': 'expf', 'floor': 0.2, 'gain': 1.0, 'etrue_scale': 1.0, 'prior_r': 0.4}
+  [lgbm_stage2_big.txt] best expf_r0.3: {'all': 0.95034, 'India': 0.93916, 'US': 0.95783} cfg={'decoder': 'expf', 'floor': 0.2, 'gain': 1.0, 'etrue_scale': 1.0, 'prior_r': 0.3}
+  [lgbm_stage2_big.txt] best expf_r0.2: {'all': 0.94537, 'India': 0.93351, 'US': 0.95331} cfg={'decoder': 'expf', 'floor': 0.2, 'gain': 1.0, 'etrue_scale': 1.0, 'prior_r': 0.2}
+Training until validation scores don't improve for 40 rounds
+[50]	valid_0's binary_logloss: 0.020177
+[100]	valid_0's binary_logloss: 0.011932
+[150]	valid_0's binary_logloss: 0.0109649
+[200]	valid_0's binary_logloss: 0.0106676
+[250]	valid_0's binary_logloss: 0.0107364
+Early stopping, best iteration is:
+[220]	valid_0's binary_logloss: 0.010571
+best_iter=220 (364s)
+  [stage2-drop] best tau: {'all': 0.95633, 'India': 0.94423, 'US': 0.96443} cfg={'decoder': 'tau', 'tau': 0.64}
+  [stage2-drop] best expf_r1.0: {'all': 0.95733, 'India': 0.94581, 'US': 0.96504} cfg={'decoder': 'expf', 'floor': 0.4, 'gain': 0.8, 'etrue_scale': 1.0, 'prior_r': 1.0}
+  [stage2-drop] best expf_r0.8: {'all': 0.95687, 'India': 0.9455, 'US': 0.96448} cfg={'decoder': 'expf', 'floor': 0.2, 'gain': 1.0, 'etrue_scale': 1.0, 'prior_r': 0.8}
+  [stage2-drop] best expf_r0.6: {'all': 0.95571, 'India': 0.94465, 'US': 0.96311} cfg={'decoder': 'expf', 'floor': 0.2, 'gain': 1.0, 'etrue_scale': 1.0, 'prior_r': 0.6}
+  [stage2-drop] best expf_r0.5: {'all': 0.95462, 'India': 0.94351, 'US': 0.96205} cfg={'decoder': 'expf', 'floor': 0.2, 'gain': 1.0, 'etrue_scale': 1.0, 'prior_r': 0.5}
+  [stage2-drop] best expf_r0.4: {'all': 0.95296, 'India': 0.94172, 'US': 0.96048} cfg={'decoder': 'expf', 'floor': 0.2, 'gain': 1.0, 'etrue_scale': 1.0, 'prior_r': 0.4}
+  [stage2-drop] best expf_r0.3: {'all': 0.95029, 'India': 0.93914, 'US': 0.95775} cfg={'decoder': 'expf', 'floor': 0.2, 'gain': 1.0, 'etrue_scale': 1.0, 'prior_r': 0.3}
+  [stage2-drop] best expf_r0.2: {'all': 0.9453, 'India': 0.9333, 'US': 0.95332} cfg={'decoder': 'expf', 'floor': 0.2, 'gain': 1.0, 'etrue_scale': 1.0, 'prior_r': 0.2}
+saved D:\Work\Hackathons\Amazon-ML\AmazonML2026\work\lgbm_stage2_drop.txt, D:\Work\Hackathons\Amazon-ML\AmazonML2026\work\stage2_drop_config.json: {'decoder': 'expf', 'floor': 0.4, 'gain': 0.8, 'etrue_scale': 1.0, 'prior_r': 1.0} {'all': 0.95733, 'India': 0.94581, 'US': 0.96504} (395s)

@@ -1,0 +1,42 @@
+using 25 features: ['sim', 'cand_rank', 'cand_margin', 's1_name_core_freq', 'name_ratio', 'name_core_ratio', 'name_token_set_ratio', 'addr_ratio', 'addr_token_set_ratio', 'name_first_token_eq', 'number_exact', 'number_prefix', 'number_jaccard', 'name_len_diff', 'addr_len_diff', 'either_non_ascii', 'ent_n_cands', 'ent_sim_rank', 'ent_sim_margin', 'ent_sim_gap2', 'ent_lex_rank', 'ent_lex_margin', 's1_n_cands', 's1_lex_rank', 's1_lex_margin']
+train: (21855788, 25), positives=6696649 (0.3064); val: (11945980, 25), positives=741780 (0.0621)
+Training until validation scores don't improve for 30 rounds
+[50]	val's auc: 0.998856	val's average_precision: 0.983211
+[100]	val's auc: 0.99922	val's average_precision: 0.989023
+[150]	val's auc: 0.999339	val's average_precision: 0.990744
+[200]	val's auc: 0.999401	val's average_precision: 0.99159
+[250]	val's auc: 0.999445	val's average_precision: 0.992214
+[300]	val's auc: 0.99947	val's average_precision: 0.992572
+[350]	val's auc: 0.999487	val's average_precision: 0.992616
+Early stopping, best iteration is:
+[339]	val's auc: 0.999484	val's average_precision: 0.992768
+trained in 579.8s, best_iteration=339
+val AUC=0.9995 AP=0.9928
+feature importance (gain): {
+  "ent_lex_margin": 123713785.00700188,
+  "ent_lex_rank": 67593182.36677742,
+  "number_jaccard": 5537999.6776371,
+  "name_len_diff": 1912492.5330238342,
+  "ent_sim_rank": 1728316.5594482422,
+  "addr_token_set_ratio": 1674744.3547916412,
+  "name_token_set_ratio": 1407908.3833999634,
+  "name_core_ratio": 1316873.0343608856,
+  "name_ratio": 1256867.691877365,
+  "ent_sim_margin": 1128853.193394661,
+  "s1_name_core_freq": 649672.6332912445,
+  "addr_len_diff": 622064.2055053711,
+  "name_first_token_eq": 565515.2339611053,
+  "addr_ratio": 521219.55210113525,
+  "number_prefix": 511862.5939064026,
+  "cand_rank": 366206.6351032257,
+  "s1_lex_rank": 265454.55002880096,
+  "ent_sim_gap2": 263929.2590084076,
+  "either_non_ascii": 193946.3176422119,
+  "sim": 184758.2469921112,
+  "s1_lex_margin": 179589.41430664062,
+  "s1_n_cands": 152063.62084197998,
+  "number_exact": 113236.28195953369,
+  "cand_margin": 72330.77185058594,
+  "ent_n_cands": 24001.48135948181
+}
+wrote D:\Work\Hackathons\Amazon-ML\AmazonML2026\work\lgbm_matcher_ctx.txt and D:\Work\Hackathons\Amazon-ML\AmazonML2026\work\val_scored_ctx.parquet

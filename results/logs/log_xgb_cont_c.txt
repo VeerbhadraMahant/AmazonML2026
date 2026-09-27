@@ -1,0 +1,8 @@
+D:\Work\Hackathons\Amazon-ML\AmazonML2026\code\business_entity_resolution\src\stack_stage2.py:170: DeprecationWarning: In Polars 2.0, the default behavior for `empty_as_null` will change to `False`. To keep the current behavior, explicitly set `empty_as_null=True`.
+  .explode("entity_id").filter(pl.col("entity_id").is_not_null() & (pl.col("entity_id") != ""))
+D:\Work\Hackathons\Amazon-ML\AmazonML2026\code\business_entity_resolution\src\stack_stage2.py:433: DeprecationWarning: `is_in` with a collection of the same datatype is ambiguous and deprecated.
+Please use `implode` to return to previous behavior.
+
+See https://github.com/pola-rs/polars/issues/22149 for more information.
+  narrow = lf.select("hs", "he", "is_s3", "pred", "label").collect()
+narrow rows 97042537 (drop_frac=0.21)

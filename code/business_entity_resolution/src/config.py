@@ -1,4 +1,5 @@
 """Central paths and constants for the entity-resolution pipeline."""
+import os
 from pathlib import Path
 
 # Repo root = three levels up from this file (src/ -> business_entity_resolution/ -> code/ -> root)
@@ -8,7 +9,7 @@ DATA_DIR = ROOT / "AmazonML" / "student_resource" / "dataset"
 TRAIN_DIR = DATA_DIR / "train"
 TEST_DIR = DATA_DIR / "test"
 
-WORK_DIR = ROOT / "work"
+WORK_DIR = Path(os.environ.get("ER_WORK_DIR", ROOT / "work"))  # ER_WORK_DIR=work_v2 for the top-50 rebuild
 OUTPUT_DIR = ROOT / "output"
 SUBMISSIONS_DIR = ROOT / "submissions"
 

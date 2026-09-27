@@ -1,0 +1,17 @@
+D:\Work\Hackathons\Amazon-ML\AmazonML2026\code\business_entity_resolution\src\stack_stage2.py:158: DeprecationWarning: In Polars 2.0, the default behavior for `empty_as_null` will change to `False`. To keep the current behavior, explicitly set `empty_as_null=True`.
+  .explode("entity_id").filter(pl.col("entity_id").is_not_null() & (pl.col("entity_id") != ""))
+oof narrow (119684711, 5) (8s)
+selected rows 24816059 (train S1 237378, val S1 220682) (41s)
+features joined (24816059, 52) (111s)
+baseline (oof stage-1 pred, full-set argmax) on val S1s:
+  [stage1-oof] best tau: {'all': 0.94515, 'India': 0.93077, 'US': 0.95477}  cfg={'decoder': 'tau', 'tau': np.float64(0.9)}
+  [stage1-oof] best tau_single: {'all': 0.9449, 'India': 0.93079, 'US': 0.95435}  cfg={'decoder': 'tau_single', 'tau': 0.9, 'tau_s': 0.93}
+  [stage1-oof] best expf: {'all': 0.91971, 'India': 0.90158, 'US': 0.93185}  cfg={'decoder': 'expf', 'floor': 0.4, 'etrue_scale': 1.0, 'gain': 0.6}
+[100]	valid_0's binary_logloss: 0.0116609
+[200]	valid_0's binary_logloss: 0.0104816
+[300]	valid_0's binary_logloss: 0.0164891
+trained (342s)
+  [stage2-oof] best tau: {'all': 0.95672, 'India': 0.94482, 'US': 0.96468}  cfg={'decoder': 'tau', 'tau': np.float64(0.66)}
+  [stage2-oof] best tau_single: {'all': 0.95372, 'India': 0.94109, 'US': 0.96217}  cfg={'decoder': 'tau_single', 'tau': 0.7, 'tau_s': 0.85}
+  [stage2-oof] best expf: {'all': 0.95756, 'India': 0.94604, 'US': 0.96526}  cfg={'decoder': 'expf', 'floor': 0.2, 'etrue_scale': 1.0, 'gain': 0.8}
+saved D:\Work\Hackathons\Amazon-ML\AmazonML2026\work\lgbm_stage2.txt, D:\Work\Hackathons\Amazon-ML\AmazonML2026\work\stage2_config.json: {'decoder': 'expf', 'floor': 0.2, 'etrue_scale': 1.0, 'gain': 0.8} {'all': 0.95756, 'India': 0.94604, 'US': 0.96526}

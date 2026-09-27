@@ -1,0 +1,18 @@
+tau=0.30  macro_F0.5=0.7967  n_matched_s1=217062
+tau=0.35  macro_F0.5=0.8139  n_matched_s1=216317
+tau=0.40  macro_F0.5=0.8291  n_matched_s1=215643
+tau=0.45  macro_F0.5=0.8430  n_matched_s1=215005
+tau=0.50  macro_F0.5=0.8564  n_matched_s1=214355
+tau=0.55  macro_F0.5=0.8684  n_matched_s1=213756
+tau=0.60  macro_F0.5=0.8799  n_matched_s1=213059
+tau=0.65  macro_F0.5=0.8910  n_matched_s1=212313
+tau=0.70  macro_F0.5=0.9020  n_matched_s1=211510
+tau=0.75  macro_F0.5=0.9122  n_matched_s1=210697
+tau=0.80  macro_F0.5=0.9220  n_matched_s1=209702
+tau=0.85  macro_F0.5=0.9303  n_matched_s1=208559
+tau=0.90  macro_F0.5=0.9357  n_matched_s1=207211
+tau=0.95  macro_F0.5=0.9325  n_matched_s1=205287
+
+BEST tau=0.90  macro_F0.5=0.9357
+   {'country': 'US', 'macro_f': 0.9483461013166606, 'len': 132208}
+   {'country': 'India', 'macro_f': 0.9167453950257636, 'len': 88474}

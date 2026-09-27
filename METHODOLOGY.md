@@ -76,3 +76,17 @@ We hold out 10% of training Source-1 entities as a private validation set (never
   - Match-count distribution shape (peaks at k=3, smooth decay to a max of 11) mirrors the training ground truth shape almost exactly — no pathological over- or under-matching.
   - 5,531,791 total matched S2/S3 ids, all unique (the exclusive-assignment decoder guarantees no S2/S3 record is claimed by more than one S1, by construction).
 - ⏭ Next: assemble the final submission package (code/README/requirements.txt, filled `Documentation_template.md`), do a first leaderboard submission to get the real (not just self-validated) score, and revisit blocking recall (India's 95.5% vs US's 98.6%) if time remains before the 27 Sep 23:59 IST deadline.
+
+## 7. Final outcome (competition closed)
+
+After the status above, three more steps were added (details in `AmazonML/student_resource/Documentation_template.md` §4.3):
+- 2-fold out-of-fold stage-1 predictions for every train pair (`src/oof_stage1.py`).
+- A stage-2 stacker over the stage-1 predictions of all competing pairs per S2/S3 record and per S1 entity,
+  trained with 21% of train S1s dropped to mimic test's larger share of ownerless records (`src/stack_stage2.py`).
+- An expected-F0.5 per-S1 decoder.
+
+Final: average of two GPU XGBoost stage-2 models, **val macro F0.5 0.9631** (LB 0.938 for the
+single-model version, 0.936 for LightGBM stage 2, 0.922 for the baseline). The val -> LB gap (~0.024) is
+not explained; France (15% of test, unseen in training) is the prime suspect. A top-50 retrieval rebuild
+(`src/retrieve_k50.py`, `src/merge_v2.py`) was started but not finished: only ~34% of blocking misses sit
+in embedding ranks 11-50, so the expected gain was small.

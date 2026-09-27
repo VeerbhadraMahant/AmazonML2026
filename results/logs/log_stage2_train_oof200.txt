@@ -1,0 +1,22 @@
+D:\Work\Hackathons\Amazon-ML\AmazonML2026\code\business_entity_resolution\src\stack_stage2.py:158: DeprecationWarning: In Polars 2.0, the default behavior for `empty_as_null` will change to `False`. To keep the current behavior, explicitly set `empty_as_null=True`.
+  .explode("entity_id").filter(pl.col("entity_id").is_not_null() & (pl.col("entity_id") != ""))
+oof narrow (119684711, 5) (4s)
+selected rows 24816059 (train S1 237378, val S1 220682) (23s)
+features joined (24816059, 52) (55s)
+baseline (oof stage-1 pred, full-set argmax) on val S1s:
+  [stage1-oof] best tau: {'all': 0.94515, 'India': 0.93077, 'US': 0.95477}  cfg={'decoder': 'tau', 'tau': np.float64(0.9)}
+  [stage1-oof] best tau_single: {'all': 0.9449, 'India': 0.93079, 'US': 0.95435}  cfg={'decoder': 'tau_single', 'tau': 0.9, 'tau_s': 0.93}
+  [stage1-oof] best expf: {'all': 0.91971, 'India': 0.90158, 'US': 0.93185}  cfg={'decoder': 'expf', 'floor': 0.4, 'etrue_scale': 1.0, 'gain': 0.6}
+[25]	valid_0's binary_logloss: 0.0438541
+[50]	valid_0's binary_logloss: 0.0199397
+[75]	valid_0's binary_logloss: 0.0135748
+[100]	valid_0's binary_logloss: 0.0116609
+[125]	valid_0's binary_logloss: 0.0109886
+[150]	valid_0's binary_logloss: 0.0106971
+[175]	valid_0's binary_logloss: 0.0106517
+[200]	valid_0's binary_logloss: 0.0104816
+trained (141s)
+  [stage2-oof] best tau: {'all': 0.95633, 'India': 0.94428, 'US': 0.9644}  cfg={'decoder': 'tau', 'tau': np.float64(0.68)}
+  [stage2-oof] best tau_single: {'all': 0.95325, 'India': 0.94051, 'US': 0.96178}  cfg={'decoder': 'tau_single', 'tau': 0.7, 'tau_s': 0.85}
+  [stage2-oof] best expf: {'all': 0.95711, 'India': 0.94552, 'US': 0.96487}  cfg={'decoder': 'expf', 'floor': 0.4, 'etrue_scale': 1.0, 'gain': 0.8}
+saved D:\Work\Hackathons\Amazon-ML\AmazonML2026\work\lgbm_stage2.txt, D:\Work\Hackathons\Amazon-ML\AmazonML2026\work\stage2_config.json: {'decoder': 'expf', 'floor': 0.4, 'etrue_scale': 1.0, 'gain': 0.8} {'all': 0.95711, 'India': 0.94552, 'US': 0.96487}

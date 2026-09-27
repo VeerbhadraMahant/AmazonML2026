@@ -1,0 +1,4 @@
+[test] scored 120781918 pairs (425.8s)
+[test] wrote D:\Work\Hackathons\Amazon-ML\AmazonML2026\output\matching_results.tsv (1732544 S1 rows, 5531791 matched pairs, tau=0.91)
+[test] copied D:\Work\Hackathons\Amazon-ML\AmazonML2026\work\candidate_pairs_test.tsv -> D:\Work\Hackathons\Amazon-ML\AmazonML2026\output\candidate_pairs.tsv
+[test] total 440.5s

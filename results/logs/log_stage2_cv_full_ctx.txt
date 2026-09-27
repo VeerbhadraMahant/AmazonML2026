@@ -1,0 +1,15 @@
+D:\Work\Hackathons\Amazon-ML\AmazonML2026\code\business_entity_resolution\src\stack_stage2.py:158: DeprecationWarning: In Polars 2.0, the default behavior for `empty_as_null` will change to `False`. To keep the current behavior, explicitly set `empty_as_null=True`.
+  .explode("entity_id").filter(pl.col("entity_id").is_not_null() & (pl.col("entity_id") != ""))
+features built (11945980, 54) (23s)
+baseline (stage-1 pred):
+  [stage1] best tau: {'all': 0.94634, 'India': 0.93344, 'US': 0.95497}  cfg={'decoder': 'tau', 'tau': np.float64(0.92)}
+  [stage1] best tau_single: {'all': 0.94588, 'India': 0.93232, 'US': 0.95495}  cfg={'decoder': 'tau_single', 'tau': 0.9, 'tau_s': 0.93}
+  [stage1] best expf: {'all': 0.92143, 'India': 0.90439, 'US': 0.93284}  cfg={'decoder': 'expf', 'floor': 0.4, 'etrue_scale': 1.0, 'gain': 0.6}
+fold 0: best_iter=209 (170s)
+top gain: [('pred', np.float64(15233992.865716934)), ('p_minus_ent_other', np.float64(5762728.40697813)), ('ent_p_gap2', np.float64(196263.0628604889)), ('ent_lex_margin', np.float64(110292.3059015274)), ('s1_p_sum', np.float64(80579.3925538063)), ('ent_p_max', np.float64(67828.70152235031)), ('p_minus_s1_src_max', np.float64(66796.47260665894)), ('s1_src_max', np.float64(52399.70767211914)), ('ent_p_sum', np.float64(43728.30172967911)), ('s1_p_n09', np.float64(35816.190385341644)), ('p_minus_ent_max', np.float64(24868.04153251648)), ('ent_p_second', np.float64(23920.47882461548)), ('s1_p_second', np.float64(21963.61233997345)), ('s1_lex_rank', np.float64(15767.898904323578)), ('addr_token_set_ratio', np.float64(13038.240592479706))]
+fold 1: best_iter=180 (289s)
+stage2 [full]:
+  [stage2-full] best tau: {'all': 0.95639, 'India': 0.94427, 'US': 0.9645}  cfg={'decoder': 'tau', 'tau': np.float64(0.64)}
+  [stage2-full] best tau_single: {'all': 0.95331, 'India': 0.94082, 'US': 0.96166}  cfg={'decoder': 'tau_single', 'tau': 0.7, 'tau_s': 0.85}
+  [stage2-full] best expf: {'all': 0.95728, 'India': 0.94585, 'US': 0.96492}  cfg={'decoder': 'expf', 'floor': 0.4, 'etrue_scale': 1.0, 'gain': 0.8}
+done (315s) iters=[209, 180]

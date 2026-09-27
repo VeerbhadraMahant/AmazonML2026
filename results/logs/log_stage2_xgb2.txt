@@ -1,0 +1,45 @@
+D:\Work\Hackathons\Amazon-ML\AmazonML2026\code\business_entity_resolution\src\stack_stage2.py:168: DeprecationWarning: In Polars 2.0, the default behavior for `empty_as_null` will change to `False`. To keep the current behavior, explicitly set `empty_as_null=True`.
+  .explode("entity_id").filter(pl.col("entity_id").is_not_null() & (pl.col("entity_id") != ""))
+D:\Work\Hackathons\Amazon-ML\AmazonML2026\code\business_entity_resolution\src\stack_stage2.py:431: DeprecationWarning: `is_in` with a collection of the same datatype is ambiguous and deprecated.
+Please use `implode` to return to previous behavior.
+
+See https://github.com/pola-rs/polars/issues/22149 for more information.
+  narrow = lf.select("hs", "he", "is_s3", "pred", "label").collect()
+narrow rows 97042537 (drop_frac=0.21)
+selected rows 50175685 train S1 705503 (20s)
+train (36324713, 48) holdout (1904992, 48) eval 11945980 (68s)
+[0]	ho-logloss:0.18807
+[100]	ho-logloss:0.01137
+[200]	ho-logloss:0.01029
+[300]	ho-logloss:0.00992
+[400]	ho-logloss:0.00968
+[500]	ho-logloss:0.00953
+[600]	ho-logloss:0.00941
+[700]	ho-logloss:0.00932
+[800]	ho-logloss:0.00924
+[900]	ho-logloss:0.00917
+[1000]	ho-logloss:0.00912
+[1100]	ho-logloss:0.00907
+[1200]	ho-logloss:0.00904
+[1300]	ho-logloss:0.00900
+[1400]	ho-logloss:0.00898
+[1500]	ho-logloss:0.00894
+[1600]	ho-logloss:0.00893
+[1700]	ho-logloss:0.00891
+[1800]	ho-logloss:0.00890
+[1900]	ho-logloss:0.00889
+[1943]	ho-logloss:0.00888
+xgb best_iter=1941 (773s)
+C:\Users\Veerbhadra\AppData\Local\Programs\Python\Python313\Lib\site-packages\xgboost\core.py:569: UserWarning: [22:57:06] WARNING: C:\actions-runner\_work\xgboost\xgboost\src\common\error_msg.cc:62: Falling back to prediction using DMatrix due to mismatched devices. This might lead to higher memory usage and slower performance. XGBoost is running on: cuda:0, while the input data is on: cpu.
+Potential solutions:
+- Use a data structure that matches the device ordinal in the booster.
+- Set the device for booster before call to inplace_predict.
+
+This warning will only be shown once.
+
+  return func(**kwargs)
+eval preds done (897s)
+  [xgb2] best {'all': 0.96286, 'India': 0.95205, 'US': 0.97009} cfg={'decoder': 'expf', 'floor': 0.2, 'gain': 0.7, 'etrue_scale': 1.0, 'prior_r': 1.0}
+  [xgb1+xgb2] best {'all': 0.96265, 'India': 0.9519, 'US': 0.96985} cfg={'decoder': 'expf', 'floor': 0.4, 'gain': 0.7, 'etrue_scale': 1.0, 'prior_r': 1.0}
+  [xgb1+xgb2+final] best {'all': 0.96219, 'India': 0.95134, 'US': 0.96945} cfg={'decoder': 'expf', 'floor': 0.2, 'gain': 0.8, 'etrue_scale': 1.0, 'prior_r': 1.0}
+ENS best=xgb2 {'all': 0.96286, 'India': 0.95205, 'US': 0.97009} dec={'decoder': 'expf', 'floor': 0.2, 'gain': 0.7, 'etrue_scale': 1.0, 'prior_r': 1.0} (917s)

@@ -1,0 +1,41 @@
+D:\Work\Hackathons\Amazon-ML\AmazonML2026\code\business_entity_resolution\src\stage2_val_context.py:31: DeprecationWarning: `is_in` with a collection of the same datatype is ambiguous and deprecated.
+Please use `implode` to return to previous behavior.
+
+See https://github.com/pola-rs/polars/issues/22149 for more information.
+  df = df.filter(pl.col("entity_id").is_in(val_ent))
+D:\Work\Hackathons\Amazon-ML\AmazonML2026\code\business_entity_resolution\src\stage2_val_context.py:35: DeprecationWarning: `is_in` with a collection of the same datatype is ambiguous and deprecated.
+Please use `implode` to return to previous behavior.
+
+See https://github.com/pola-rs/polars/issues/22149 for more information.
+  parts.append(hash_keys(df.select("source1_entity_id", "entity_id")).select(
+seen 4000000, kept 2842847 (10s)
+seen 8000000, kept 5685787 (19s)
+seen 12000000, kept 8532445 (27s)
+seen 16000000, kept 11377815 (56s)
+seen 20000000, kept 14219713 (88s)
+seen 24000000, kept 17066262 (98s)
+seen 28000000, kept 19911671 (107s)
+seen 32000000, kept 22753740 (116s)
+seen 36000000, kept 25598873 (126s)
+seen 40000000, kept 28443586 (136s)
+seen 44000000, kept 31284869 (146s)
+seen 48000000, kept 34130950 (157s)
+seen 52000000, kept 36974473 (167s)
+seen 56000000, kept 39816589 (177s)
+seen 60000000, kept 42663723 (187s)
+seen 64000000, kept 45507011 (198s)
+seen 68000000, kept 48352083 (207s)
+seen 72000000, kept 51196054 (215s)
+seen 76000000, kept 54039302 (224s)
+seen 80000000, kept 56890829 (232s)
+seen 84000000, kept 59729101 (241s)
+seen 88000000, kept 62572156 (248s)
+seen 92000000, kept 65423043 (256s)
+seen 96000000, kept 68259873 (265s)
+seen 100000000, kept 71109686 (273s)
+seen 104000000, kept 73954158 (281s)
+seen 108000000, kept 76796816 (290s)
+seen 112000000, kept 79643596 (298s)
+seen 116000000, kept 82484988 (306s)
+seen 119684711, kept 85107604 (313s)
+done 85107604 rows, is_val=11945980 (321s)

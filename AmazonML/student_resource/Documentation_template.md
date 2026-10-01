@@ -25,7 +25,8 @@ We built a blocking-then-scoring entity resolution pipeline with four stages:
 On a held-out 10% validation split (split by Source-1 entity), the Stage-1 context matcher alone scores
 **macro F0.5 = 0.9461** (US 0.955, India 0.933). Our earlier 16-feature baseline scored 0.9359 on the
 same split and 0.922 on the leaderboard (the Stage-2 LightGBM version, val 0.957, scored 0.936). The final pipeline with the Stage-2 stacker scores
-**macro F0.5 = 0.9631** on validation and **see portal (single-XGBoost version: 0.938; Stage-2 LightGBM version: 0.936)** on the public leaderboard.
+**macro F0.5 = 0.9631** on validation. We did not record the final ensemble's public leaderboard score;
+the single-XGBoost version scored **0.938** and the Stage-2 LightGBM version 0.936.
 
 The main modelling idea comes from the training data: every Source-2/3 record matches at most one
 Source-1 entity. We therefore treat matching as an assignment problem and add features that describe
@@ -71,7 +72,7 @@ found the following:
 
 **Approach Type:** Blocking plus a two-stage classifier.
 - Blocking: embedding retrieval and lexical exact-key joins.
-- Scoring: a Stage-1 LightGBM pairwise matcher, then a Stage-2 LightGBM stacker.
+- Scoring: a Stage-1 LightGBM pairwise matcher, then a Stage-2 GPU XGBoost stacker.
 - Decoding: exclusive assignment.
 
 **Core Innovation:** The pipeline uses the verified "one owner per Source-2/3 record" structure in
@@ -228,11 +229,17 @@ only see *similarity* scores of competitors. Stage 2 re-scores each pair knowing
   (1.73M S1 vs 10.0M S2/S3; train 2.2M vs 10.3M), i.e. more records whose owner is absent. We
   simulate this by dropping 21% of non-validation train S1 entities before computing aggregates, both
   for training and for the validation estimate.
-- **Model:** XGBoost (Apache-2.0) trained on the GPU (RTX 4060, `device="cuda"`, `tree_method="hist"`)
-  on ~28M rows from ~548K train S1 entities, depth 9, eta 0.05, up to 2000 rounds with early stopping
-  on a held-out slice of *train* S1 entities. Validation S1 entities are never used for training.
+- **Model:** the average of two XGBoost (Apache-2.0) models trained on the GPU (RTX 4060,
+  `device="cuda"`, `tree_method="hist"`). Each is trained on ~36M rows from ~705K train S1 entities
+  (45% sample, the two models use different samples), depth 10, eta 0.05, 512 bins, subsample and
+  colsample 0.8, seeds 7 and 11, with early stopping on a held-out slice of *train* S1 entities. A
+  wall-clock budget stopped them at 1944 and 1439 rounds. Validation S1 entities are never used for
+  training. A first XGBoost model (depth 9, 256 bins, 35% sample) scored 0.9621 and is not in the
+  final average.
 - **Results on the 220,682 validation S1 entities (test-like simulation):** Stage-1 only 0.9451;
-  Stage-2 LightGBM 0.9573; **Stage-2 single GPU XGBoost 0.9621; **final: average of two GPU XGBoost models (different seeds and train-S1 samples) 0.9631 (US 0.9703, India 0.9523)****.
+  Stage-2 LightGBM 0.9573; Stage-2 single GPU XGBoost 0.9621; **final: average of two GPU XGBoost models (different seeds and train-S1 samples) 0.9631 (US 0.9703, India 0.9523)**.
+- **Caveat:** the model combination and decoder settings were picked on these same validation
+  entities, so 0.9631 is slightly optimistic. Gaps under ~0.001 between variants are within noise.
 
 ### 4.4 Decoding and threshold selection (`src/decode.py`)
 
@@ -258,8 +265,9 @@ only see *similarity* scores of competitors. Stage 2 re-scores each pair knowing
 - **Metric.** Macro F0.5 is computed exactly as on the leaderboard: per-Source-1 F0.5, where an empty
   prediction for an empty gold list scores 1.0, averaged over entities. We report it overall and per
   country (`decode.f_beta_macro`, `evaluate_fine.py`).
-- **Stage-2 evaluation.** The stacker is fitted and evaluated with internal folds or splits over the
-  validation Source-1 entities, never on rows it was trained on.
+- **Stage-2 evaluation.** The final stacker is trained on train Source-1 entities only (with
+  out-of-fold Stage-1 predictions) and evaluated on the held-out validation Source-1 entities.
+  Ensemble weights and decoder settings were also chosen on those validation entities.
 - **Format check.** Every submission is checked with the challenge's `utils/validate_submission.py`
   (default and `--check-ids` modes) before upload.
 
@@ -271,7 +279,7 @@ only see *similarity* scores of competitors. Stage 2 re-scores each pair knowing
 |---|---|---|---|---|
 | Baseline (16 features, tau=0.91) | 0.9359 | 0.948 | 0.917 | 0.922 |
 | Stage-1 context matcher (25 features, tau=0.91) | 0.9461 | 0.955 | 0.933 | not submitted separately |
-| **Final: Stage-1 + Stage-2 stacker + decoder** | **0.9631** | 0.9703 | 0.9523 | **see portal (single-XGBoost version: 0.938; Stage-2 LightGBM version: 0.936)** |
+| **Final: Stage-1 + Stage-2 stacker + decoder** | **0.9631** | 0.9703 | 0.9523 | not recorded (single-XGBoost version: 0.938) |
 
 - **Test-set sanity check:**
   - The pipeline was run end-to-end on the test set: 1,732,544 Source-1 entities, including the
@@ -317,14 +325,15 @@ training distributions.
 - **Models:**
   - `intfloat/multilingual-e5-small`: MIT license, 118M parameters, used only for retrieval
     embeddings.
-  - LightGBM (Stage 1 and Stage 2): MIT license. These are gradient-boosted trees, not neural
-    networks, and far below the 8B-parameter cap.
+  - LightGBM (Stage 1): MIT license.
+  - XGBoost (final Stage 2): Apache-2.0 license.
+  - Both are gradient-boosted trees, not neural networks, and far below the 8B-parameter cap.
 - **No external data lookup:** we use no external databases, APIs, geocoders, business registries or
   web data. The only inputs are the provided train/test TSVs and fixed normalisation rules in code.
   The e5 weights are downloaded once from the Hugging Face Hub as a pretrained model and are not used
   as a lookup source.
-- **Other libraries:** polars, pyarrow, numpy, rapidfuzz, anyascii, scikit-learn, torch and
-  sentence-transformers. All are open source under permissive licenses (MIT, BSD or Apache-2.0).
+- **Other libraries:** polars, pyarrow, numpy, rapidfuzz, anyascii, scikit-learn, torch,
+  sentence-transformers and xgboost. All are open source under permissive licenses (MIT, BSD or Apache-2.0).
 
 ---
 
@@ -333,10 +342,10 @@ training distributions.
 We built a blocking-then-scoring pipeline:
 - blocking with multilingual embedding kNN plus lexical safety-net joins, at 97.4% recall;
 - a 25-feature LightGBM matcher;
-- a Stage-2 stacker over Stage-1 prediction context;
+- a Stage-2 GPU XGBoost stacker over Stage-1 prediction context;
 - an exclusive-assignment decoder.
 
-It reaches validation macro F0.5 0.9631 (leaderboard see portal (single-XGBoost version: 0.938; Stage-2 LightGBM version: 0.936)), uses no external data
+It reaches validation macro F0.5 0.9631 (public leaderboard 0.938 for the single-XGBoost version), uses no external data
 and stays well inside the license and size constraints.
 
 The main lesson: once blocking recall was high, most of the remaining error was *ranking among
@@ -364,11 +373,15 @@ reproduction commands, and `requirements.txt` pins the dependencies.
 | `split_and_sample.py`, `train_matcher.py` | Stage-1 matcher (entry point: `... ctx`) |
 | `evaluate.py`, `evaluate_fine.py`, `decode.py` | Macro F0.5 metric, tau sweep, exclusive decoder |
 | `score_matcher.py`, `score_test.py` | Batched Stage-1 scoring of the 120.8M test pairs |
-| `stack_stage2.py` | Stage-2 stacker and final decode |
+| `oof_stage1.py` | Out-of-fold Stage-1 predictions for train, fold-averaged predictions for test |
+| `stack_stage2.py` | Stage-2 stacker (LightGBM and XGBoost), ensembling and final decode |
+| `stage2_val_context.py` | Stage-2 validation-context experiment (not in the final path) |
+| `make_submission_zip.py` | Builds `<team>_submission.zip` in the required layout |
 | `decode_test.py`, `run_test_finish.py` | Decode test scores into `output/` (Stage-1-only path) |
 | `resample_hard_neg.py` | Optional hard-negative resampling experiment (not in the final path) |
 
 ### B. Additional Results
 
 `METHODOLOGY.md` at the repository root has the narrative write-up and development timings. Validation
-tau sweeps are logged in `work/log_eval_fine_ctx.txt`.
+tau sweeps and Stage-2 training logs are in `results/logs/` in the repository (e.g.
+`log_eval_fine_ctx.txt`, `log_stage2_xgb2.txt`, `log_stage2_xgb3.txt`).

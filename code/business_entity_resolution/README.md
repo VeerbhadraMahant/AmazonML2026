@@ -2,8 +2,8 @@
 
 This pipeline matches each Source-1 business record to its Source-2/3 records for the US, India and
 France. France appears only in the test set and is handled zero-shot. The pipeline blocks candidates,
-scores them with a 25-feature LightGBM matcher, re-scores them with a Stage-2 LightGBM stacker, and
-decodes them with exclusive assignment. The methodology write-up is `Documentation_template.md` at the
+scores them with a 25-feature LightGBM matcher, re-scores them with a Stage-2 stacker (average of two GPU XGBoost models), and
+decodes them with exclusive assignment and an expected-F0.5 decoder. The methodology write-up is `Documentation_template.md` at the
 zip root.
 
 ## Pipeline
@@ -11,7 +11,8 @@ zip root.
 ```
 raw TSV -> normalize -> e5 embeddings (GPU) -> blocking (kNN top-10 per country + 2 lexical joins)
         -> 16 pairwise features -> +9 context features -> Stage-1 LightGBM
-        -> Stage-2 LightGBM stacker -> exclusive-assignment decode
+        -> out-of-fold Stage-1 preds -> Stage-2 XGBoost stacker (2-model average)
+        -> exclusive-assignment + expected-F0.5 decode
         -> output/matching_results.tsv + output/candidate_pairs.tsv
 ```
 
@@ -25,7 +26,8 @@ raw TSV -> normalize -> e5 embeddings (GPU) -> blocking (kNN top-10 per country 
 | 4. Stage-1 matcher | `train_matcher.py` | `lgbm_matcher_ctx.txt`, `val_scored_ctx.parquet` |
 | 5. Threshold sweep | `evaluate_fine.py` (uses `decode.py`, `evaluate.py`) | printed macro F0.5 per tau and per country |
 | 6. Score test | `score_test.py` (uses `score_matcher.py`) | `test_scored_ctx.parquet` |
-| 7. Stage-2 and decode | `stack_stage2.py` | `<repo>/output/matching_results.tsv` |
+| 6b. OOF Stage-1 | `oof_stage1.py` | `oof_train_scored.parquet`, `test_scored_oof.parquet` |
+| 7. Stage-2 and decode | `stack_stage2.py` | `xgb_stage2_{b,c}.json`, `stage2_ens3_config.json`, `<repo>/output/matching_results.tsv` |
 | 8. Candidate file | copy | `<repo>/output/candidate_pairs.tsv` |
 
 `config.py` holds all paths and constants. `io_utils.py` has the TSV read/write helpers.
@@ -103,19 +105,31 @@ python score_test.py ctx
 python oof_stage1.py
 
 # 9. Stage-2 stacker, trained on OOF preds with full competitor context, in the
-#    "S1-dropped" (distractor-heavy, test-like) regime. GPU XGBoost (RTX 4060, CUDA):
-python stack_stage2.py train_xgb 0.35 2000                  # -> work/xgb_stage2.json + stage2_ens_config.json
-#    (LightGBM alternative, CPU: python stack_stage2.py train_drop 0.21 400 drop)
+#    "S1-dropped" (distractor-heavy, test-like) regime. The runs must go in this order:
+#    each train_xgb run loads the earlier models to evaluate ensembles on validation,
+#    and fails if they are missing.
+python stack_stage2.py train_big 0.30                       # LightGBM -> lgbm_stage2_big.txt
+python stack_stage2.py train_drop 0.21 400 final            # LightGBM -> lgbm_stage2_final.txt
+python stack_stage2.py train_xgb 0.35 2000                  # GPU XGB #1 -> xgb_stage2.json
+XGB2=1 python stack_stage2.py train_xgb 0.45 1944           # GPU XGB #2 (depth 10, seed 7) -> xgb_stage2_b.json
+XGB3=1 XGB_OFFSET=<N> python stack_stage2.py train_xgb 0.45 1439
+#                                                           # GPU XGB #3 (seed 11, shifted S1 sample)
+#                                                           # -> xgb_stage2_c.json + stage2_ens3_config.json
+#    On Windows PowerShell set the variables first, e.g. $env:XGB2="1".
+#    XGB #2 and #3 were stopped by a wall-clock budget (XGB_STOP_AT) at 1944 and 1439
+#    boosting rounds; the round counts above reproduce that length. The XGB_OFFSET used
+#    for XGB #3 was not recorded, so a retrained XGB #3 sees a slightly different train-S1
+#    sample than the submitted one. To regenerate the exact submission, use the released
+#    models (see "Reproducing from the released models" below).
 
-# 10. Apply Stage 2 to test + expected-F0.5 decoder -> output/matching_results.tsv
-python stack_stage2.py train_xgb 0.45 2000                  # 2nd and 3rd GPU models (different seed / S1 sample) -> xgb_stage2_b.json, xgb_stage2_c.json
-python stack_stage2.py apply_test ../../../output/matching_results.tsv test_scored_oof.parquet ens3   # average of the two
+# 10. Apply Stage 2 (average of XGB #2 and #3) to test + expected-F0.5 decoder
+python stack_stage2.py apply_test ../../../output/matching_results.tsv test_scored_oof.parquet ens3
 
 # 11. The candidate set fed to the matcher -> output/candidate_pairs.tsv
 python -c "import shutil, config; shutil.copyfile(config.WORK_DIR/'candidate_pairs_test.tsv', config.OUTPUT_DIR/'candidate_pairs.tsv')"
 ```
 
-**Stage-1-only fallback:** this replaces steps 7–9 without the stacker. It scores, decodes at the
+**Stage-1-only fallback:** this replaces steps 7–10 without the stacker. It scores, decodes at the
 given tau, writes `matching_results.tsv` and copies `candidate_pairs.tsv`:
 
 ```bash
@@ -123,6 +137,14 @@ python run_test_finish.py ctx 0.91
 # or, if test_scored_ctx.parquet already exists:
 python decode_test.py ctx 0.91 ../../../output/matching_results.tsv
 ```
+
+### Reproducing from the released models
+
+The two Stage-2 models and their config used for the submission are attached to the GitHub Release
+[`v1.0-final`](https://github.com/VeerbhadraMahant/AmazonML2026/releases/tag/v1.0-final). To skip
+step 9, run steps 1–8, download `xgb_stage2_b.json`, `xgb_stage2_c.json` and
+`stage2_ens3_config.json` into `<repo>/work/`, then run steps 10 and 11. `apply_test` needs a CUDA
+GPU because it sets `device="cuda"` on the XGBoost models.
 
 **Validate the output format** with the challenge-provided script (its path is relative to the repo
 root):
@@ -151,7 +173,8 @@ Peak RAM stays under 24 GB because each stage streams parquet in batches.
 - **`candidate_pairs.tsv` is the exact set the matcher runs inference on.** There is no pruning
   between blocking and scoring, so every id in `matching_results.tsv` also appears in it.
 - **Compliance:**
-  - Models: `multilingual-e5-small` (MIT, 118M params) and LightGBM (MIT, trees).
+  - Models: `multilingual-e5-small` (MIT, 118M params), LightGBM (MIT, Stage 1) and XGBoost
+    (Apache-2.0, Stage 2). The tree models are not neural networks.
   - No external data, APIs or lookups: the only inputs are the provided train/test files and fixed
     normalisation rules in code.
 
@@ -161,6 +184,6 @@ Peak RAM stays under 24 GB because each stage streams parquet in batches.
 |---|---|---|---|---|
 | Baseline (16 features) | 0.9359 | 0.948 | 0.917 | 0.922 |
 | Stage-1 context matcher (25 features, tau=0.91; AUC 0.9995, AP 0.9928) | 0.9461 | 0.955 | 0.933 | |
-| **Final (Stage 1 + Stage 2)** | **0.9631** | | | **see portal (single-XGBoost version: 0.938)** |
+| **Final (Stage 1 + Stage 2)** | **0.9631** | | | not recorded (single-XGBoost version: 0.938) |
 
 Blocking pair recall is 97.4% (US 98.6%, India 95.5%).
